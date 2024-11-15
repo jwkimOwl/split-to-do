@@ -1,7 +1,20 @@
-import { withAuthenticator, Button, Heading, View, Card } from "@aws-amplify/ui-react";
+import { withAuthenticator, Button, Heading, View, Card, Flex, Text, TextField} from "@aws-amplify/ui-react";
 import { BrowserRouter as Router, Route, Routes, Navigate, Link } from 'react-router-dom';
-import "@aws-amplify/ui-react/styles.css";
 import './App.css';
+import { Amplify, graphqlOperation } from 'aws-amplify';
+import { generateClient } from 'aws-amplify/api'
+import awsconfig from './aws-exports';
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import "@aws-amplify/ui-react/styles.css";
+import { listTodos } from "./graphql/queries";
+import {
+  createTodo as createTodoMutation,
+  deleteTodo as deleteTodoMutation,
+} from "./graphql/mutations";
+import logo from "./logo.svg";
+Amplify.configure(awsconfig);
+
 
 // Navigation component
 function NavMenu() {
@@ -31,14 +44,89 @@ function HomePage({ signOut }) {
 }
 
 // New TodosPage component
-function TodosPage() {
+function TodosPage({signOut}) {
+  const [todos, setTodos] = useState([]);
+  const client = generateClient();
+
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  async function fetchTodos() {
+    const apiData = await client.graphql({ query: listTodos });
+    const todosFromAPI = apiData.data.listTodos.items;
+    setTodos(todosFromAPI);
+  }
+
+  async function createTodo(event) {
+    event.preventDefault();
+    const form = new FormData(event.target);
+    const data = {
+      name: form.get("name"),
+      description: form.get("description"),
+    };
+    await client.graphql({
+      query: createTodoMutation,
+      variables: { input: data },
+    });
+    fetchTodos();
+    event.target.reset();
+  }
+
+  async function deleteTodo({ id }) {
+    const newTodo = todos.filter((todo) => todo.id !== id);
+    setTodos(newTodo);
+    await client.graphql({
+      query: deleteTodoMutation,
+      variables: { input: { id } },
+    });
+  }
   return (
     <View className="App">
-      <Card>
-        <Heading level={1}>Your Todos</Heading>
-        {/* Todo list implementation will go here */}
-        <p>Todo list coming soon!</p>
-      </Card>
+      <Heading level={1}>My Todo App</Heading>
+      <View as="form" margin="3rem 0" onSubmit={createTodo}>
+        <Flex direction="row" justifyContent="center">
+          <TextField
+            name="name"
+            placeholder="Todo Name"
+            label="Todo Name"
+            labelHidden
+            variation="quiet"
+            required
+          />
+          <TextField
+            name="description"
+            placeholder="Todo Description"
+            label="Todo Description"
+            labelHidden
+            variation="quiet"
+            required
+          />
+          <Button type="submit" variation="primary">
+            Create Todo
+          </Button>
+        </Flex>
+      </View>
+      <Heading level={2}>Current Todos</Heading>
+      <View margin="3rem 0">
+        {todos.map((todo) => (
+          <Flex
+            key={todo.id || todo.name}
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Text as="strong" fontWeight={700}>
+              {todo.name}
+            </Text>
+            <Text as="span">{todo.description}</Text>
+            <Button variation="link" onClick={() => deleteTodo(todo)}>
+              Delete todo
+            </Button>
+          </Flex>
+        ))}
+      </View>
+      <Button onClick={signOut}>Sign Out</Button>
     </View>
   );
 }
@@ -58,58 +146,6 @@ function ProfilePage({ signOut }) {
 function App({ signOut }) {
   return (
     <Router>
-      <div>
-        <div className="App">
-          <div className="login-container" style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: '20px',
-          margin: '20px auto',
-          maxWidth: '300px',
-          border: '1px solid #ccc',
-          borderRadius: '5px'
-        }}>
-          <h2>Login</h2>
-          <input
-            type="text"
-            placeholder="User ID"
-            style={{
-              margin: '10px 0',
-              padding: '8px',
-              width: '100%'
-            }}
-          />
-          <input
-            type="password"
-            placeholder="Password" 
-            style={{
-              margin: '10px 0',
-              padding: '8px',
-              width: '100%'
-            }}
-          />
-          <button
-            style={{
-              backgroundColor: '#61dafb',
-              color: 'white',
-              padding: '10px 20px',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer',
-              marginTop: '10px'
-            }}
-            onClick={() => {
-              
-              // Add login logic here
-              console.log('Login clicked');
-            }}
-          >
-            Login
-          </button>
-        </div>
-      </div>
-
         <NavMenu />
         <Routes>
           <Route path="/home" element={<HomePage signOut={signOut} />} />
@@ -117,7 +153,6 @@ function App({ signOut }) {
           <Route path="/profile" element={<ProfilePage signOut={signOut} />} />
           <Route path="/" element={<Navigate to="/home" />} />
         </Routes>
-      </div>
     </Router>
   );
 }
