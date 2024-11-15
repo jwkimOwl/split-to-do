@@ -2,7 +2,7 @@ import { withAuthenticator, Button, Heading, View, Card, Flex, Text, TextField} 
 import { BrowserRouter as Router, Route, Routes, Navigate, Link } from 'react-router-dom';
 import './App.css';
 import { Amplify, graphqlOperation } from 'aws-amplify';
-import {awsconfig} from './aws-exports';
+//import {awsconfig} from './aws-exports';
 import { generateClient } from 'aws-amplify/api';
 import React, { useState, useEffect } from "react";
 import "./App.css";
@@ -16,7 +16,7 @@ import logo from "./logo.svg";
 import { DataStore } from 'aws-amplify/datastore';
 import { Todo } from './models';
 import awsmobile from './aws-exports.js';
-Amplify.configure(awsconfig);
+//Amplify.configure(awsconfig);
 Amplify.configure(awsmobile);
 
 

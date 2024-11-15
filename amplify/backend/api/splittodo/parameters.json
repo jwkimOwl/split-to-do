@@ -1,0 +1,6 @@
+{
+  "AppSyncApiName": "splittodo",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthModeLastUpdated": "2024-11-15T22:39:34.915Z"
+}
