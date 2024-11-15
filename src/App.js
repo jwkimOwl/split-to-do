@@ -15,9 +15,9 @@ import {
 import logo from "./logo.svg";
 import { DataStore } from 'aws-amplify/datastore';
 import { Todo } from './models';
-import config from './aws-exports.js';
+import awsmobile from './aws-exports.js';
 Amplify.configure(awsconfig);
-Amplify.configure(config)
+Amplify.configure(awsmobile);
 
 
 // Navigation component
