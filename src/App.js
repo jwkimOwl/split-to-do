@@ -2,8 +2,8 @@ import { withAuthenticator, Button, Heading, View, Card, Flex, Text, TextField} 
 import { BrowserRouter as Router, Route, Routes, Navigate, Link } from 'react-router-dom';
 import './App.css';
 import { Amplify, graphqlOperation } from 'aws-amplify';
-import { generateClient } from 'aws-amplify/api'
-import awsconfig from './aws-exports';
+import {awsconfig} from './aws-exports';
+import { generateClient } from 'aws-amplify/api';
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import "@aws-amplify/ui-react/styles.css";
@@ -13,7 +13,11 @@ import {
   deleteTodo as deleteTodoMutation,
 } from "./graphql/mutations";
 import logo from "./logo.svg";
+import { DataStore } from 'aws-amplify/datastore';
+import { Todo } from './models';
+import config from './aws-exports.js';
 Amplify.configure(awsconfig);
+Amplify.configure(config)
 
 
 // Navigation component
@@ -156,5 +160,11 @@ function App({ signOut }) {
     </Router>
   );
 }
+await DataStore.save(
+  new Todo({
+  "name": "Lorem ipsum dolor sit amet",
+  "description": "Lorem ipsum dolor sit amet"
+})
+);
 
 export default withAuthenticator(App);
