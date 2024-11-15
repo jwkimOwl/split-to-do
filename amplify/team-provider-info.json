@@ -1,22 +1,37 @@
 {
-  "dev": {
+  "staging": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-splittodo-dev-6526d-authRole",
-      "UnauthRoleArn": "arn:aws:iam::423623842196:role/amplify-splittodo-dev-6526d-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::423623842196:role/amplify-splittodo-dev-6526d-authRole",
-      "Region": "sa-east-1",
-      "DeploymentBucketName": "amplify-splittodo-dev-6526d-deployment",
-      "UnauthRoleName": "amplify-splittodo-dev-6526d-unauthRole",
-      "StackName": "amplify-splittodo-dev-6526d",
-      "StackId": "arn:aws:cloudformation:sa-east-1:423623842196:stack/amplify-splittodo-dev-6526d/0dcffb30-a32b-11ef-8272-0232513480df",
-      "AmplifyAppId": "d1zkz5cm2b8vf4"
+      "AuthRoleName": "amplify-amplify71d8f9af0e124-staging-45ac1-authRole",
+      "UnauthRoleArn": "arn:aws:iam::423623842196:role/amplify-amplify71d8f9af0e124-staging-45ac1-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::423623842196:role/amplify-amplify71d8f9af0e124-staging-45ac1-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-amplify71d8f9af0e124-staging-45ac1-deployment",
+      "UnauthRoleName": "amplify-amplify71d8f9af0e124-staging-45ac1-unauthRole",
+      "StackName": "amplify-amplify71d8f9af0e124-staging-45ac1",
+      "StackId": "arn:aws:cloudformation:us-east-1:423623842196:stack/amplify-amplify71d8f9af0e124-staging-45ac1/ce53e6a0-a39e-11ef-82a6-12865c33385f",
+      "AmplifyAppId": "dcdba5rjrxsro"
     },
     "categories": {
       "auth": {
-        "splittodo4b1c68f6": {}
-      },
-      "api": {
-        "splittodo": {}
+        "splittodof3294c00": {}
+      }
+    }
+  },
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-splittodo-dev-e85c9-authRole",
+      "UnauthRoleArn": "arn:aws:iam::423623842196:role/amplify-splittodo-dev-e85c9-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::423623842196:role/amplify-splittodo-dev-e85c9-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-splittodo-dev-e85c9-deployment",
+      "UnauthRoleName": "amplify-splittodo-dev-e85c9-unauthRole",
+      "StackName": "amplify-splittodo-dev-e85c9",
+      "StackId": "arn:aws:cloudformation:us-east-1:423623842196:stack/amplify-splittodo-dev-e85c9/ec5b8f20-a396-11ef-8e11-12f88c7023cb",
+      "AmplifyAppId": "d2yva4g9tbqjvi"
+    },
+    "categories": {
+      "auth": {
+        "splittodof3294c00": {}
       }
     }
   }
