@@ -1,4 +1,4 @@
-import { withAuthenticator, Button, Heading, View, Card, Flex, Text, TextField} from "@aws-amplify/ui-react";
+import { withAuthenticator, Button, Heading, View, Card, Flex, Text, TextField, Divider } from "@aws-amplify/ui-react";
 import { BrowserRouter as Router, Route, Routes, Navigate, Link } from 'react-router-dom';
 import './App.css';
 import { Amplify, graphqlOperation} from 'aws-amplify';
@@ -79,70 +79,54 @@ function TodosPage({signOut}) {
   }
 
   async function fetchTodos() {
-    try {
-      if (!user?.username) {
-        console.log('No user data available yet');
-        return;
+    const apiData = await client.graphql({ query: listTodos,
+      variables: {
+        filter: {
+          _deleted: { ne: true }
+        }
       }
-      
-      const apiData = await client.graphql({ 
-        query: listTodos
-        //variables: {
-        //  filter: { owner: { eq: user.username } }
-        //}
-      });
-      console.log('Todos fetched successfully:', apiData);
-      const todosFromAPI = apiData.data.listTodos.items;
-      setTodos(todosFromAPI);
-      console.log('Todos set successfully:', todosFromAPI);
-    } catch (err) {
-      console.log('error fetching todos:', err);
-      if (err.errors) {
-        console.log('GraphQL errors:', err.errors);
-      }
-      setTodos([]);
-    }
+    });
+    const todosFromAPI = apiData.data.listTodos.items;
+    const activeTodos = todosFromAPI.filter(todo => !todo._deleted);
+    setTodos(activeTodos);
   }
 
   async function createTodo(event) {
-    try {
-      event.preventDefault();
-      
-      if (!user?.username) {
-        console.log('No user found');
-        return;
-      }
-
-      const form = new FormData(event.target);
-      const data = {
-        name: form.get("name"),
-        description: form.get("description"),
-        owner: user.username
-      };
-
-      console.log('Creating todo with data:', data); // Debug log
-
-      await client.graphql({
-        query: createTodoMutation,
-        variables: { input: data },
-      });
-      console.log('Todo created successfully');
-
-      await fetchTodos();
-      event.target.reset();
-    } catch (err) {
-      console.error('Error creating todo:', err);
-      console.error('GraphQL errors:', err.errors);
-    }
+    event.preventDefault();
+    const form = new FormData(event.target);
+    const data = {
+      name: form.get("name"),
+      description: form.get("description"),
+    };
+    const result =await client.graphql({
+      query: createTodoMutation,
+      variables: { input: data },
+    });
+    const newTodo = result.data.createTodo;
+    fetchTodos();
+    event.target.reset();
   }
 
-  async function deleteTodo({ id }) {
-    const newTodo = todos.filter((todo) => todo.id !== id);
+  async function deleteTodo(event) {
+    const targetid = event.id;
+    console.log('Deleting todo with id:', targetid);
+    const newTodo = todos.filter((todo) => todo.id !== targetid);
+    console.log('New todo list:', newTodo);
     setTodos(newTodo);
-    await client.graphql({
-      query: deleteTodoMutation,
-      variables: { input: { id } },
+    console.log('Deleting todo from API');
+    try {
+      await client.graphql({
+        query: deleteTodoMutation,
+        variables: { 
+          input: { 
+            id: targetid,
+            _version:1
+          }
+        },
     });
+    } catch (error) {
+      console.log('Error deleting todo:', error);
+    }
   }
   return (
     <View className="App">
@@ -172,21 +156,34 @@ function TodosPage({signOut}) {
       </View>
       <Heading level={2}>Current Todos</Heading>
       <View margin="3rem 0">
-        {todos.map((todo) => (
-          <Flex
-            key={todo.id || todo.name}
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Text as="strong" fontWeight={700}>
-              {todo.name}
-            </Text>
-            <Text as="span">{todo.description}</Text>
-            <Button variation="link" onClick={() => deleteTodo(todo)}>
-              Delete todo
-            </Button>
-          </Flex>
+        {todos.map((todo, index) => (
+          <View key={todo.id || todo.name}>
+            <Flex
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              padding="1rem"
+            >
+              <Flex
+                direction="column"
+                alignItems="flex-start"
+                gap="0.5rem"
+              >
+                <Text as="strong" fontWeight={700}>
+                  {todo.name}
+                </Text>
+                <Text as="span">
+                  {todo.description}
+                </Text>
+              </Flex>
+              <Button variation="link" onClick={() => deleteTodo(todo)}>
+                Delete todo
+              </Button>
+            </Flex>
+            {index < todos.length - 1 && (
+              <Divider orientation="horizontal" />
+            )}
+          </View>
         ))}
       </View>
       <Button onClick={signOut}>Sign Out</Button>
