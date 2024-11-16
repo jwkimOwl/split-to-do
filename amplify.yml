@@ -4,6 +4,7 @@ backend:
     build:
       commands:
         - '# Execute Amplify CLI with the helper script'
+        - amplifyPush --simple
         - amplify push --allow-destructive-graphql-schema-updates
 frontend:
   phases:
