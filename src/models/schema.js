@@ -60,13 +60,6 @@ export const schema = {
                     "properties": {
                         "rules": [
                             {
-                                "allow": "private",
-                                "operations": [
-                                    "read",
-                                    "create"
-                                ]
-                            },
-                            {
                                 "provider": "userPools",
                                 "ownerField": "owner",
                                 "allow": "owner",

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate, Link } from 'react-ro
 import './App.css';
 import { Amplify, graphqlOperation} from 'aws-amplify';
 import { getCurrentUser } from 'aws-amplify/auth';
-//import {awsconfig} from './aws-exports';
+import awsmobile from './aws-exports.js';
 import { generateClient } from 'aws-amplify/api';
 import React, { useState, useEffect } from "react";
 import "./App.css";
@@ -16,9 +16,21 @@ import {
 import logo from "./logo.svg";
 import { DataStore } from 'aws-amplify/datastore';
 import { Todo } from './models';
-import awsmobile from './aws-exports.js';
-//Amplify.configure(awsconfig);
-Amplify.configure(awsmobile);
+//import awsmobile from './aws-exports.js';
+//import amplifyconfig from './amplifyconfiguration.json';
+//Amplify.configure(amplifyconfig);
+Amplify.configure({
+  ...awsmobile,
+  API: {
+    GraphQL: {
+      endpoint: awsmobile.aws_appsync_graphqlEndpoint,
+      region: awsmobile.aws_appsync_region,
+      defaultAuthMode: 'AMAZON_COGNITO_USER_POOLS',
+      apiKey: awsmobile.aws_appsync_apiKey // Add this line
+    }
+  }
+});
+//Amplify.configure(awsmobile);
 // Navigation component
 function NavMenu() {
   return (
@@ -50,7 +62,7 @@ function HomePage({ signOut }) {
 function TodosPage({signOut}) {
   const [todos, setTodos] = useState([]);
   const [user, setUser] = useState(null);
-  const client = generateClient();
+  const client = generateClient({ authMode: 'AMAZON_COGNITO_USER_POOLS' });
 
   // Separate useEffect for fetching user
   useEffect(() => {
@@ -79,32 +91,96 @@ function TodosPage({signOut}) {
   }
 
   async function fetchTodos() {
-    const apiData = await client.graphql({ query: listTodos,
-      variables: {
-        filter: {
-          _deleted: { ne: true }
-        }
+    try {
+      if (!user?.username) {
+        console.log('No user data available yet');
+        return;
       }
-    });
-    const todosFromAPI = apiData.data.listTodos.items;
-    const activeTodos = todosFromAPI.filter(todo => !todo._deleted);
-    setTodos(activeTodos);
+      
+      console.log('Fetching todos for user:', user.username);
+      
+      const apiData = await client.graphql({ 
+        query: listTodos,
+        authMode: 'AMAZON_COGNITO_USER_POOLS',  // Explicitly set auth mode
+        variables: {
+          filter: {
+            _deleted: { ne: true },
+            owner: { eq: user.username }
+          }
+        }
+      });
+
+      console.log('API Response:', apiData);  // Debug log
+
+      if (apiData.errors) {
+        console.error('GraphQL Errors:', apiData.errors);
+        throw new Error(apiData.errors[0].message);
+      }
+
+      const todosFromAPI = apiData.data.listTodos.items;
+      // Additional filter to ensure no deleted items
+      const activeTodos = todosFromAPI.filter(todo => 
+        !todo._deleted && todo.owner === user.username
+      );
+      
+      console.log('Todos fetched successfully:', activeTodos);
+      setTodos(activeTodos);
+
+    } catch (err) {
+      console.log('error fetching todos:', err);
+      if (err.errors) {
+        err.errors.forEach(error => {
+          console.error('GraphQL error:', {
+            message: error.message,
+            type: error.errorType,
+            path: error.path
+          });
+        });
+      }
+      setTodos([]);
+    }
   }
 
   async function createTodo(event) {
+    try {
     event.preventDefault();
     const form = new FormData(event.target);
     const data = {
       name: form.get("name"),
       description: form.get("description"),
+      owner: user.username
     };
-    const result =await client.graphql({
-      query: createTodoMutation,
-      variables: { input: data },
-    });
-    const newTodo = result.data.createTodo;
-    fetchTodos();
-    event.target.reset();
+    console.log('Current user:', user);
+    console.log('Creating todo with data:', data);
+      const result =await client.graphql({
+        query: createTodoMutation,
+        variables: { input: data,
+          condition: null,
+          _version: 1
+        },
+      });
+      if (result.errors) {
+        console.error('GraphQL Errors:', result.errors);
+        throw new Error(result.errors[0].message);
+      }
+
+      if (result.data?.createTodo) {
+        console.log('Todo created:', result.data.createTodo);
+        await fetchTodos();
+        event.target.reset();
+      }
+    } catch (err) {
+      console.error('Detailed error:', err);
+      if (err.errors) {
+        err.errors.forEach(error => {
+          console.error('GraphQL error:', {
+            message: error.message,
+            type: error.errorType,
+            path: error.path
+          });
+        });
+      }
+    }
   }
 
   async function deleteTodo(event) {
@@ -216,12 +292,12 @@ function App({ signOut }) {
     </Router>
   );
 }
-/*await DataStore.save(
+await DataStore.save(
   new Todo({
   "name": "Lorem ipsum dolor sit amet",
   "description": "Lorem ipsum dolor sit amet"
 })
-);*/
-
+);
+console.log(awsmobile);
 export default withAuthenticator(App);
 

@@ -2,7 +2,7 @@
   "version": "1",
   "cognitoConfig": {
     "identityPoolName": "splittodof3294c00_identitypool_f3294c00",
-    "allowUnauthenticatedIdentities": false,
+    "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "splittf3294c00",
     "userPoolName": "splittodof3294c00_userpool_f3294c00",
     "autoVerifiedAttributes": [
@@ -16,9 +16,12 @@
     "smsVerificationMessage": "Your verification code is {####}",
     "emailVerificationSubject": "Your verification code",
     "emailVerificationMessage": "Your verification code is {####}",
-    "defaultPasswordPolicy": false,
+    "defaultPasswordPolicy": true,
     "passwordPolicyMinLength": 8,
-    "passwordPolicyCharacters": [],
+    "passwordPolicyCharacters": [
+      "Requires Lowercase",
+      "Requires Numbers"
+    ],
     "requiredAttributes": [
       "email"
     ],
@@ -36,8 +39,10 @@
     "sharedId": "f3294c00",
     "resourceName": "splittodof3294c00",
     "authSelections": "identityPoolAndUserPool",
-    "useDefault": "defaultSocial",
-    "userPoolGroupList": [],
+    "useDefault": "manual",
+    "userPoolGroupList": [
+      "users"
+    ],
     "serviceName": "Cognito",
     "usernameCaseSensitive": false,
     "useEnabledMfas": true,
@@ -56,10 +61,18 @@
     "breakCircularDependency": true,
     "dependsOn": [],
     "hostedUI": true,
-    "hostedUIDomainName": "splittodoab06b90c-ab06b90c",
+    "authProviders": [],
+    "thirdPartyAuth": false,
+    "userPoolGroups": true,
+    "adminQueries": false,
+    "triggers": {},
+    "hostedUIDomainName": "splittodoc8a82bd8-c8a82bd8",
     "authProvidersUserPool": [],
     "hostedUIProviderMeta": "[]",
-    "authProviders": [],
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"https://main.dcdba5rjrxsro.amplifyapp.com/\"],\"LogoutURLs\":[\"https://main.dcdba5rjrxsro.amplifyapp.com/\"]}"
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"https://main.dcdba5rjrxsro.amplifyapp.com/\",\"https://main.dcdba5rjrxsro.amplifyapp.com/\"],\"LogoutURLs\":[\"https://main.dcdba5rjrxsro.amplifyapp.com/\"]}",
+    "parentStack": {
+      "Ref": "AWS::StackId"
+    },
+    "permissions": []
   }
 }

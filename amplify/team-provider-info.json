@@ -13,7 +13,8 @@
     },
     "categories": {
       "auth": {
-        "splittodof3294c00": {}
+        "splittodof3294c00": {},
+        "userPoolGroups": {}
       },
       "api": {
         "splittodo": {}

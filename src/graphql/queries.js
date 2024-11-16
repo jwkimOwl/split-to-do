@@ -13,7 +13,6 @@ export const getTodo = /* GraphQL */ `
       _version
       _deleted
       _lastChangedAt
-      __typename
     }
   }
 `;
@@ -33,12 +32,8 @@ export const listTodos = /* GraphQL */ `
         updatedAt
         _version
         _deleted
-        _lastChangedAt
-        __typename
       }
       nextToken
-      startedAt
-      __typename
     }
   }
 `;
@@ -64,12 +59,9 @@ export const syncTodos = /* GraphQL */ `
         updatedAt
         _version
         _deleted
-        _lastChangedAt
-        __typename
       }
       nextToken
       startedAt
-      __typename
     }
   }
 `;
