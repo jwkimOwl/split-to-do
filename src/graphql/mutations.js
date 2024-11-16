@@ -6,10 +6,11 @@ export const createTodo = /* GraphQL */ `
     $input: CreateTodoInput!
     $condition: ModelTodoConditionInput
   ) {
-    createTodo(input: $input, condition: $condition) {
+    createTodo(input: $input, condition: $condition, owner: $owner) {
       id
       name
       description
+      owner
       createdAt
       updatedAt
       _version
@@ -24,10 +25,11 @@ export const updateTodo = /* GraphQL */ `
     $input: UpdateTodoInput!
     $condition: ModelTodoConditionInput
   ) {
-    updateTodo(input: $input, condition: $condition) {
+    updateTodo(input: $input, condition: $condition, owner: $owner) {
       id
       name
       description
+      owner
       createdAt
       updatedAt
       _version
@@ -42,10 +44,11 @@ export const deleteTodo = /* GraphQL */ `
     $input: DeleteTodoInput!
     $condition: ModelTodoConditionInput
   ) {
-    deleteTodo(input: $input, condition: $condition) {
+    deleteTodo(input: $input, condition: $condition, owner: $owner) {
       id
       name
       description
+      owner
       createdAt
       updatedAt
       _version

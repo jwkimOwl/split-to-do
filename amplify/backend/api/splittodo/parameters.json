@@ -2,5 +2,11 @@
   "AppSyncApiName": "splittodo",
   "DynamoDBBillingMode": "PAY_PER_REQUEST",
   "DynamoDBEnableServerSideEncryption": false,
-  "AuthModeLastUpdated": "2024-11-15T22:39:34.915Z"
+  "AuthModeLastUpdated": "2024-11-15T22:39:34.915Z",
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authsplittodof3294c00",
+      "Outputs.UserPoolId"
+    ]
+  }
 }
